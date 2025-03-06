@@ -43,3 +43,7 @@ The remaining rows are the arcs: vertex 1, vertex 2, and arc weight
 0 will always be the source vertex, and the vertex with the largest id will always
 be the sink. In the above example that makes 0 the source and 4 the sink.
 
+## TODO
+- actual huffman part
+- decode (not required but would be cool. Isn't very hard I don't think
+    - basically just traverse the encoded part and lookup the codes in a dict

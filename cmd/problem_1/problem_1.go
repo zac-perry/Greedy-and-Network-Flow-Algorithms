@@ -28,6 +28,26 @@ Note: You will build the frequency table based on the content of the file.
 5. When printing, traverse the original file again, and look up each letter to get the encoding
 */
 
+func buildHuffmanTree() {
+	// create leaf nodes for all chars with their freq as the weight
+	// place nodes in a min heap ordered by frequency
+	// repeat:
+	// extract 2 lowest freq nodes
+	// create new internal node with these two as children
+	// new node freq is sum of children freq
+	// insert new node back into the heap
+	// continue
+}
+
+func generateHuffmanCodes() {
+
+	// traverse the tree and generate the generate codes
+	// left = add a 0, right = add a 1 until we reach the right code
+	// store this somewhere i guess
+}
+
+func encodeFile() {}
+
 // printFreqTable will just print out the chars and their corresponding frequency of
 // occurence within the file
 func printFreqTable(charFreqMap map[byte]int) {
@@ -81,6 +101,15 @@ func main() {
 		log.Fatal("usage: ./bin/problem_1 filename")
 	}
 
+	// read and print
 	freq := readFile(os.Args[1])
 	printFreqTable(freq)
+
+	// file size before compression
+	fileInfo, err := os.Stat(os.Args[1])
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Println("Size of the file before compression: ", fileInfo.Size(), " bytes")
 }
