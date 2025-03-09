@@ -44,6 +44,6 @@ The remaining rows are the arcs: vertex 1, vertex 2, and arc weight
 be the sink. In the above example that makes 0 the source and 4 the sink.
 
 ## TODO
-- actual huffman part
-- decode (not required but would be cool. Isn't very hard I don't think
-    - basically just traverse the encoded part and lookup the codes in a dict
+- part 1 
+    - comments
+    - refactor to use container/heap pkg
