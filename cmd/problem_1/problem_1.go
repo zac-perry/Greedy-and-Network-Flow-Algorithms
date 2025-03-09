@@ -1,12 +1,12 @@
 // COSC 581 HW5
-// Zachary Perry
-// March 11, 2025
+// Zachary Perry March 11, 2025
 // Problem 1: Greedy Algorithms -- Huffman Encoding
 
 package main
 
 import (
 	"bufio"
+	"container/heap"
 	"fmt"
 	"log"
 	"os"
@@ -20,6 +20,61 @@ type node struct {
 	freq  int
 	left  *node
 	right *node
+}
+
+type MinHeap []*node
+
+func (minHeap MinHeap) Len() int { return len(minHeap) }
+
+func (minHeap MinHeap) Less(i, j int) bool {
+	return minHeap[i].freq < minHeap[j].freq
+}
+
+func (minHeap MinHeap) Swap(i, j int) {
+	minHeap[i], minHeap[j] = minHeap[j], minHeap[i]
+}
+
+func (minHeap *MinHeap) Push(x any) {
+	*minHeap = append(*minHeap, x.(*node))
+}
+
+func (minHeap *MinHeap) Pop() any {
+	placeholder := *minHeap
+	length := len(placeholder)
+	value := placeholder[length-1]
+	*minHeap = placeholder[0 : length-1]
+
+	return value
+}
+
+func heapTime(charFreqMap map[byte]int) *node {
+	minHeap := &MinHeap{}
+	heap.Init(minHeap)
+
+	// loop and push onto the heap
+	for k, v := range charFreqMap {
+		newNode := &node{
+			char: k,
+			freq: v,
+		}
+		heap.Push(minHeap, newNode)
+	}
+
+	// NOTE: to access and index, need to do (*minHeap)[i]
+	for minHeap.Len() > 1 {
+		left := heap.Pop(minHeap).(*node)
+		right := heap.Pop(minHeap).(*node)
+
+		newNode := &node{
+			freq:  left.freq + right.freq,
+			left:  left,
+			right: right,
+		}
+
+		heap.Push(minHeap, newNode)
+	}
+
+	return heap.Pop(minHeap).(*node)
 }
 
 // returns the root of the tree
@@ -208,7 +263,9 @@ func main() {
 
 	// Build out the Huffman tree and generate the codes, starting at the root.
 	encodings := make(map[byte]string)
-	root := buildHuffmanTree(freq)
+	root := heapTime(freq)
+
+	//		root := buildHuffmanTree(freq)
 	generateHuffmanCodes(root, encodings, "")
 
 	// With the original file contents & encodings, encode the file.
