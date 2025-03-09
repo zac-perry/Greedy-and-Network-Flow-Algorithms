@@ -66,6 +66,7 @@ func heapTime(charFreqMap map[byte]int) *node {
 		right := heap.Pop(minHeap).(*node)
 
 		newNode := &node{
+			char:  0,
 			freq:  left.freq + right.freq,
 			left:  left,
 			right: right,
