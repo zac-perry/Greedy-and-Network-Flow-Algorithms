@@ -144,3 +144,6 @@ Total Flow: 12
 - [Go Heap Documentation](https://pkg.go.dev/container/heap)
 - [Network Flow Visualization (for checking my output)](https://visualgo.net/en/maxflow)
 - Introduction to Algorithms - Fourth Edition (for both Network Flow and Greedy)
+
+TODO: 
+- Add writing up about edge case for cycles and how I handled it

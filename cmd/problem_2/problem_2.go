@@ -131,21 +131,32 @@ func (graph *Graph) AugmentingPaths(source, sink int) []*AugPath {
 			break
 		}
 
+    // TODO: add comment about tracking the max thing.
 		// Find the maximum amount of flow that can be sent through the path (minimum capacity).
 		// Find edge from v1 to v2.
 		// If found, calculate the difference in capacity and flow, update minimumCapacity.
 		minimumCapacity := math.MaxInt
 		for i := range len(path) - 1 {
 			v1, v2 := path[i], path[i+1]
+			max := 0
 			for _, edge := range graph.edges[v1] {
 				if edge.to == v2 {
 					diff := edge.capacity - edge.flow
-					if diff < minimumCapacity {
-						minimumCapacity = diff
+					if diff > max {
+						max = diff
 					}
-					break
+					/*if diff < minimumCapacity && diff > 0 {
+						minimumCapacity = diff
+						fmt.Printf("New min flow for current edge TO: %d -- %d\n", edge.to, minimumCapacity)
+					}*/
+					//break
 				}
 			}
+
+			if max > 0 && max < minimumCapacity {
+				minimumCapacity = max
+			}
+
 		}
 
 		// Update the flow values.
@@ -155,14 +166,14 @@ func (graph *Graph) AugmentingPaths(source, sink int) []*AugPath {
 			v1, v2 := path[i], path[i+1]
 
 			for _, edge := range graph.edges[v1] {
-				if edge.to == v2 {
+				if edge.to == v2 && edge.capacity != 0 {
 					edge.flow += minimumCapacity
 					break
 				}
 			}
 
 			for _, edge := range graph.edges[v2] {
-				if edge.to == v1 {
+				if edge.to == v1 && edge.capacity != 0 {
 					edge.flow -= minimumCapacity
 					break
 				}
