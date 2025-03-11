@@ -25,6 +25,8 @@ Contains code for homework 5 problems.
 ./bin/problem_2 filename
 ```
 
+***NOTE: I am using Go version 1.22.9, as this is the version installed on the UTK Tesla/Hydra machines (where I am assuming this will be ran)***
+
 ## Problem #1 
 Greedy Algorithms: Write an algorithm in the language of your choice to provide
 a Huffman encoding from the contents of a .txt file (just the 26 lower case letters
