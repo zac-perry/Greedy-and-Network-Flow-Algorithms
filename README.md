@@ -48,11 +48,12 @@ The remaining rows are the arcs: vertex 1, vertex 2, and arc weight
 0 will always be the source vertex, and the vertex with the largest id will always
 be the sink. In the above example that makes 0 the source and 4 the sink.
 
+### Solution:
+
+
 ## TODO
 - part 1 
     - comments, clean up
     - explain in the readme
 - part 2 
-    - actually do it
-    - comments
-    - explain in the readme
+    - explain in readme

@@ -1,5 +1,6 @@
 // COSC 581 HW5
-// Zachary Perry March 11, 2025
+// Zachary Perry
+// March 11, 2025
 // Problem 1: Greedy Algorithms -- Huffman Encoding
 
 package main
@@ -14,6 +15,8 @@ import (
 	"strconv"
 )
 
+// node struct represents a node in the MinHeap.
+// It will hold the 
 type node struct {
 	char  byte
 	freq  int
