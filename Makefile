@@ -1,5 +1,5 @@
 # Zachary Perry
-# Compiles main into bin/main
+# compiles problem_1 and problem_2 into respective bin/ files
 .DEFAULT_GOAL := build
 
 fmt: 

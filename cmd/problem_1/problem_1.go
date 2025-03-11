@@ -11,7 +11,6 @@ import (
 	"log"
 	"os"
 	"slices"
-	"sort"
 	"strconv"
 )
 
@@ -22,6 +21,9 @@ type node struct {
 	right *node
 }
 
+// NOTE: All of this heap stuff is required in order to use Go's stdlib implementation of heap
+// In this case, defining a type and implementing the proper interface methods (Go's library will then call certain things when needed)
+// for example, when calling push, Go stdlib container/heap will call len, less, and swap to make sure it retains its heap property (in this case, min)
 type MinHeap []*node
 
 func (minHeap MinHeap) Len() int { return len(minHeap) }
@@ -47,7 +49,8 @@ func (minHeap *MinHeap) Pop() any {
 	return value
 }
 
-func heapTime(charFreqMap map[byte]int) *node {
+// Builds out the huffman tree using a minheap
+func buildHuffmanTree(charFreqMap map[byte]int) *node {
 	minHeap := &MinHeap{}
 	heap.Init(minHeap)
 
@@ -61,6 +64,9 @@ func heapTime(charFreqMap map[byte]int) *node {
 	}
 
 	// NOTE: to access and index, need to do (*minHeap)[i]
+	// This is the huffman tree builder man part
+	// Makes a new node (freq is left + right)
+	// Left and right are the two shmallest atm
 	for minHeap.Len() > 1 {
 		left := heap.Pop(minHeap).(*node)
 		right := heap.Pop(minHeap).(*node)
@@ -78,46 +84,6 @@ func heapTime(charFreqMap map[byte]int) *node {
 	return heap.Pop(minHeap).(*node)
 }
 
-// returns the root of the tree
-func buildHuffmanTree(charFreqMap map[byte]int) *node {
-	// loop through map, make nodes for them all
-	chars := make([]byte, 0)
-	nodes := make([]*node, 0)
-	for c := range charFreqMap {
-		chars = append(chars, c)
-	}
-
-	for _, c := range chars {
-		newNode := &node{
-			char: c,
-			freq: charFreqMap[c],
-		}
-		nodes = append(nodes, newNode)
-	}
-
-	for len(nodes) > 1 {
-		sort.Slice(nodes, func(i, j int) bool {
-			return nodes[i].freq < nodes[j].freq
-		})
-
-		left := nodes[0]
-		right := nodes[1]
-		nodes = nodes[2:]
-
-		newNode := &node{
-			char:  0,
-			freq:  left.freq + right.freq,
-			left:  left,
-			right: right,
-		}
-
-		nodes = append(nodes, newNode)
-	}
-
-	// return the root
-	return nodes[0]
-}
-
 func generateHuffmanCodes(node *node, encodings map[byte]string, encoding string) {
 	// traverse the tree and generate the generate codes
 	// left = add a 0, right = add a 1 until we reach the right code
@@ -127,8 +93,10 @@ func generateHuffmanCodes(node *node, encodings map[byte]string, encoding string
 	}
 
 	// traverse each side, adding either 1 or zero to the code?
-	if node.char != 0 {
+	if node.left == nil && node.right == nil {
+		// if node.char != 0 {
 		encodings[node.char] = encoding
+		return
 	}
 
 	generateHuffmanCodes(node.left, encodings, encoding+"0")
@@ -264,9 +232,7 @@ func main() {
 
 	// Build out the Huffman tree and generate the codes, starting at the root.
 	encodings := make(map[byte]string)
-	root := heapTime(freq)
-
-	//		root := buildHuffmanTree(freq)
+	root := buildHuffmanTree(freq)
 	generateHuffmanCodes(root, encodings, "")
 
 	// With the original file contents & encodings, encode the file.
@@ -276,5 +242,5 @@ func main() {
 		log.Fatal(err)
 	}
 
-	fmt.Printf("Size of the file AFTER compression : %5d bytes\n", outputFileInfo.Size())
+	fmt.Printf("Size of the file AFTER compression : %5d bytes\n\n", outputFileInfo.Size())
 }

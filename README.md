@@ -24,6 +24,11 @@ compress the file. Your program should output 2 things, the frequency table for
 the characters, and the size of the file (in bytes) before and after the encoding.
 Note: You will build the frequency table based on the content of the file.
 
+### Solution:
+MinHeap -- TODO: discuss go implementation for this just to make sure it's covered
+Then, go through the algorithm itself
+TODO: mention the padding on the last byte in the encoding, also explain this part (concating everything, etc)
+
 ## Problem 2
 2. Network Flow: Write an algorithm in a language of your choice that takes as input
 a flow network in modified DIMACS format and prints all flow augmenting paths.
@@ -45,5 +50,9 @@ be the sink. In the above example that makes 0 the source and 4 the sink.
 
 ## TODO
 - part 1 
+    - comments, clean up
+    - explain in the readme
+- part 2 
+    - actually do it
     - comments
-    - refactor to use container/heap pkg
+    - explain in the readme
