@@ -30,7 +30,58 @@ The remaining rows are the arcs: vertex 1, vertex 2, and arc weight
 be the sink. In the above example that makes 0 the source and 4 the sink.
 */
 
-func readFile(fileName string) {
+type Graph struct {
+	edges map[int][]*Edge
+}
+
+type Edge struct {
+	to       int
+	capacity int
+	flow     int
+}
+
+func NewGraph(vertexCount int) *Graph {
+  graph := &Graph{
+		edges: make(map[int][]*Edge),
+	}
+
+  for i := range vertexCount {
+   graph.edges[i] = []*Edge{} 
+  }
+
+  return graph
+}
+
+// AddEdge() will add an edge from v1 to v2 with the specified weight as the capacity to the graph.
+// Additionally, it also adds a backwards edge (with 0 capacity).
+func (graph *Graph) AddEdge(v1, v2, weight int) {
+	// Forward edge (v1 -> v2)
+	forward := &Edge{
+		to:       v2,
+		capacity: weight,
+		flow:     0,
+	}
+
+	// Backward edge (v2 -> v1)
+	backward := &Edge{
+		to:       v1,
+		capacity: 0,
+		flow:     0,
+	}
+
+	graph.edges[v1] = append(graph.edges[v1], forward)
+	graph.edges[v2] = append(graph.edges[v2], backward)
+}
+
+func (graph *Graph) BFS() {}
+
+func (graph *Graph) FordFulkerson() {}
+
+
+
+// readFile will read a file containing a flow network in DIMACS format.
+// While reading this, it will go ahead and create the
+func readFile(fileName string) (*Graph, int, int) {
 	file, err := os.Open(fileName)
 	if err != nil {
 		log.Fatal("Error opening the file")
@@ -61,15 +112,13 @@ func readFile(fileName string) {
 	if err != nil {
 		log.Fatal("readFile(): Error reading in the arcCount")
 	}
-	fmt.Printf("VERTEX COUNT: %6d\nARCCOUNT: %10d\n", vertexCount, arcCount)
+	//fmt.Printf("VERTEX COUNT: %6d\nARCCOUNT: %10d\n", vertexCount, arcCount)
 
 	// Remaining rows: vertex 1, vertex 2, and arc weight
 	// - 0 is always the source vertex
 	// - vertex with the largest id will always be the sink
 	// for example -> 0 is the source, 4 is the sink, 3rd value are all weights
-
-	// TODO, make sure to only scan for the given number of arc counts
-	// keep track of the sink value
+	graph := NewGraph(vertexCount)
 	source := 0
 	sink := 0
 	arcReadCount := 1
@@ -84,12 +133,11 @@ func readFile(fileName string) {
 			// NOTE: maybe break here when one of the lines is fucked?
 			log.Fatal("readFile(): vertex and weight row either has too few or too many arguments")
 		}
-		fmt.Println(line)
+		//fmt.Println(line)
 
 		// decode each value, keep track of the source and sink?
 		v1, err := strconv.Atoi(line[0])
 		if err != nil {
-			// NOTE: maybe end the iteration and read in the rest of the lines?
 			log.Fatal("readFile(): Error reading in v1")
 		}
 
@@ -103,16 +151,31 @@ func readFile(fileName string) {
 			log.Fatal("readFile(): Error reading in the weight")
 		}
 
-		fmt.Printf("  v1: %10d\n  v2: %10d\n  weight: %6d\n", v1, v2, weight)
+		// fmt.Printf("  v1: %10d\n  v2: %10d\n  weight: %6d\n", v1, v2, weight)
 
-		// Track the sink
+		// Track the sink (max v2 found).
 		if v2 > sink {
 			sink = v2
 		}
+
+		// Create and add edge to the graph (both forward and backward)
+		graph.AddEdge(v1, v2, weight)
 		arcReadCount++
 	}
 
-	fmt.Printf("\nSourceVertex: %d\nSinkVertex: %d\n", source, sink)
+	return graph, source, sink
+}
+
+func printData(graph *Graph, source, sink int) {
+	for k, v := range graph.edges {
+		fmt.Println("Key: ", k)
+		for _, k := range v {
+			fmt.Println(" going to vertex: ", k.to)
+			fmt.Println(" capacity       : ", k.capacity)
+		}
+	}
+	fmt.Println("source: ", source)
+	fmt.Println("sink: ", sink)
 }
 
 func main() {
@@ -121,5 +184,8 @@ func main() {
 	}
 
 	// Read in the input file, get file Stats.
-	readFile(os.Args[1])
+	graph, source, sink := readFile(os.Args[1])
+	printData(graph, source, sink)
+
+	// now, can do ford fulkerson and bfs
 }

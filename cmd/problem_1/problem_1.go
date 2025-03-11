@@ -26,7 +26,9 @@ type node struct {
 // for example, when calling push, Go stdlib container/heap will call len, less, and swap to make sure it retains its heap property (in this case, min)
 type MinHeap []*node
 
-func (minHeap MinHeap) Len() int { return len(minHeap) }
+func (minHeap MinHeap) Len() int {
+	return len(minHeap)
+}
 
 func (minHeap MinHeap) Less(i, j int) bool {
 	return minHeap[i].freq < minHeap[j].freq
