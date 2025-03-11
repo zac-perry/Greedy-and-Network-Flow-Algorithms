@@ -94,7 +94,7 @@ Size of the file AFTER compression : 59572 bytes
 ```
 
 ## Problem #2
-2. Network Flow: Write an algorithm in a language of your choice that takes as input a flow network in modified DIMACS format and prints all flow augmenting paths. Ensure infinite looping isn’t possible. I will try to break your code. Ex. File (tab separated values)
+Network Flow: Write an algorithm in a language of your choice that takes as input a flow network in modified DIMACS format and prints all flow augmenting paths. Ensure infinite looping isn’t possible. I will try to break your code. Ex. File (tab separated values)
 
 ```
 5 6
