@@ -96,6 +96,7 @@ func (graph *Graph) BFS(source, sink int) ([]int, bool) {
 
 		for _, edge := range graph.edges[currVertex] {
 			next := edge.to
+
 			// If we have not visited this edge yet and the capacity is > flow.
 			// Set as visited, save into the path map, and append to the queue.
 			if !visited[next] && edge.capacity > edge.flow {
@@ -131,32 +132,28 @@ func (graph *Graph) AugmentingPaths(source, sink int) []*AugPath {
 			break
 		}
 
-    // TODO: add comment about tracking the max thing.
 		// Find the maximum amount of flow that can be sent through the path (minimum capacity).
 		// Find edge from v1 to v2.
-		// If found, calculate the difference in capacity and flow, update minimumCapacity.
+		// NOTE: In an attempt to avoid cycles completley, I calculate the max capacity of the edge (if edge.to == v2). In doing this, I can determine if this is the correct edge and not the 'cyclic' edge.
+		// If the edge from v1 to v2 is found, I calcualte the maxDiff to ensure that it's the correct edge I am looking for.
+		// If so, set max diff and then check/compare against the current minimumCapacity found.
 		minimumCapacity := math.MaxInt
 		for i := range len(path) - 1 {
 			v1, v2 := path[i], path[i+1]
-			max := 0
+
+			maxDiff := 0
 			for _, edge := range graph.edges[v1] {
 				if edge.to == v2 {
 					diff := edge.capacity - edge.flow
-					if diff > max {
-						max = diff
+					if diff > maxDiff {
+						maxDiff = diff
 					}
-					/*if diff < minimumCapacity && diff > 0 {
-						minimumCapacity = diff
-						fmt.Printf("New min flow for current edge TO: %d -- %d\n", edge.to, minimumCapacity)
-					}*/
-					//break
 				}
 			}
 
-			if max > 0 && max < minimumCapacity {
-				minimumCapacity = max
+			if maxDiff > 0 && maxDiff < minimumCapacity {
+				minimumCapacity = maxDiff
 			}
-
 		}
 
 		// Update the flow values.

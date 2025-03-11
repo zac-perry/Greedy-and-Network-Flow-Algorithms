@@ -137,6 +137,22 @@ Augmenting Path #2  0 -> 3 -> 4 | Flow = 5
 Total Flow: 12
 ```
 
+One interesting issue I ran into was handling cycles. Whenever I was calculating the maximum amount of flow that could be sent through the given path, I would often search for the first occurence of the needed edge for v1 -> v2. This would sometimes result in me using an edge that was resulting in a cycle (backwards with 0 capacity). This would cause my output to be completley wrong, even though I was searching for the right edge. For example: 
+
+```
+4 5 
+0 1 10 
+1 2 5 
+2 3 10 
+3 1 5 
+1 3 5 
+
+Incorrect output:
+Augmenting Path #0 0 -> 1 -> 3 | Flow = 10
+```
+
+This is NOT correct, as, for this specific example, the flow for this path should be 5. But, in this case, I was selecting the cyclic edge that had 0 as the capacity, resulting in 10. To solve this, whenever I was calculating the minimumCapacity, I ensure I am grabbing the correct edge. To do this, I track the max capacity found for this edge. So, if there are multiple, I only keep the valid one. Then, I can use this value for the minimumCapacity. This ensures that I am always using the edge that has the most available capacity and avoids cycles / infinite looping.
+
 ### References Used
 - [Huffman Coding Wikipedia](https://en.wikipedia.org/wiki/Huffman_coding)
 - [Huffman Coding Generator (for checking my output)](https://www.dcode.fr/huffman-tree-compression)
@@ -145,5 +161,3 @@ Total Flow: 12
 - [Network Flow Visualization (for checking my output)](https://visualgo.net/en/maxflow)
 - Introduction to Algorithms - Fourth Edition (for both Network Flow and Greedy)
 
-TODO: 
-- Add writing up about edge case for cycles and how I handled it
