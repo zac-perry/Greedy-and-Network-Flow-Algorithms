@@ -134,7 +134,7 @@ func (graph *Graph) AugmentingPaths(source, sink int) []*AugPath {
 
 		// Find the maximum amount of flow that can be sent through the path (minimum capacity).
 		// Find edge from v1 to v2.
-		// NOTE: In an attempt to avoid cycles completley, I calculate the max capacity of the edge (if edge.to == v2). In doing this, I can determine if this is the correct edge and not the 'cyclic' edge.
+		// NOTE: In an attempt to avoid cycles completley, I calculate the max residual capacity of the edge (if edge.to == v2). In doing this, I can determine if this is the correct edge and not the 'cyclic' edge.
 		// If the edge from v1 to v2 is found, I calcualte the maxDiff to ensure that it's the correct edge I am looking for.
 		// If so, set max diff and then check/compare against the current minimumCapacity found.
 		minimumCapacity := math.MaxInt

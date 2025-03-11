@@ -151,7 +151,7 @@ Incorrect output:
 Augmenting Path #0 0 -> 1 -> 3 | Flow = 10
 ```
 
-This is NOT correct, as, for this specific example, the flow for this path should be 5. But, in this case, I was selecting the cyclic edge that had 0 as the capacity, resulting in 10. To solve this, whenever I was calculating the minimumCapacity, I ensure I am grabbing the correct edge. To do this, I track the max capacity found for this edge. So, if there are multiple, I only keep the valid one. Then, I can use this value for the minimumCapacity. This ensures that I am always using the edge that has the most available capacity and avoids cycles / infinite looping.
+This is NOT correct, as, for this specific example, the flow for this path should be 5. But, in this case, I was selecting the cyclic edge that had 0 as the capacity, resulting in 10. To solve this, whenever I was calculating the minimumCapacity, I ensure I am grabbing the correct edge. To do this, I track the max residual capacity found for this edge. So, if there are multiple, I only keep the valid one. Then, I can use this value for the minimumCapacity. This ensures that I am always using the edge that has the most available capacity and avoids cycles / infinite looping.
 
 ### References Used
 - [Huffman Coding Wikipedia](https://en.wikipedia.org/wiki/Huffman_coding)
