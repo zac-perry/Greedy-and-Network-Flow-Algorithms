@@ -34,9 +34,17 @@ the characters, and the size of the file (in bytes) before and after the encodin
 Note: You will build the frequency table based on the content of the file.
 
 ### Solution:
-MinHeap -- TODO: discuss go implementation for this just to make sure it's covered
-Then, go through the algorithm itself
-TODO: mention the padding on the last byte in the encoding, also explain this part (concating everything, etc)
+To solve this question, I first started with reading in the file contents and creating a character frequency table. This will describe how many times each character appears in the file. Then, I created a min heap which will store nodes of type node (shown below). This way, all characters in the min heap can be prioritized based on their frequency.
+```
+```
+
+Once the min heap is officially built, I am then able to build the Huffman Tree. This just consisted of popping off the two highest priority nodes (lowest frequencies), making a parent node (with a frequency equal to the total) and adding it back into the min heap. After this, the min heap is officially a Huffman Tree! Then, I parse the Huffman tree, creating and storing Huffman codes for each letter. These codes are built as the tree is parsed and stored once the node (leaf) is found. For example, everytime the left side of a node is traversed, I add "0" to the encoding. Alternativley, everytime I traverse the right side, I add "1" to the encoding. 
+
+Once I have all of the Huffman Codes created for their corresponding letters based on the tree, I can now fully encode and write a binary file. The tricky part here was converting the Huffman codes (which I saved as strings) into actual bytes to be written. I accomplished this by first traversing the original file contents, char by char, looking up the corresponding Huffman code, and concatenating it to a string. The resulting string, which was all codes added together, was then parsed 8 bits (byte) at a time, converted to an actual byte, and stored. I also made sure to account for padding of the last element in the string, as more times than not, the very last bit string may have a length < 8. If so, I just pad with "0"'s, then convert to a byte.
+
+The results were then written, producing a compressed binary file. Here is the output when ran on a file with a size of 100,001 bytes.:
+```
+```
 
 ## Problem #2
 2. Network Flow: Write an algorithm in a language of your choice that takes as input
