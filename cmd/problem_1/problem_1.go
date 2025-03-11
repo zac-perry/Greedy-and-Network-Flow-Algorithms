@@ -16,7 +16,11 @@ import (
 )
 
 // node struct represents a node in the MinHeap.
-// It will hold the 
+// char -> represents the character read in from the file for this node.
+// freq -> frequency the character appears in the file.
+// left -> left node connection in the min heap.
+// right -> right node connection in the min heap.
+// NOTE: This is also used to create new 'parent' nodes, that point to two 'char' nodes, with the frequency set to the total of both left.freq + right.freq.
 type node struct {
 	char  byte
 	freq  int
@@ -24,27 +28,36 @@ type node struct {
 	right *node
 }
 
-// NOTE: All of this heap stuff is required in order to use Go's stdlib implementation of heap
-// In this case, defining a type and implementing the proper interface methods (Go's library will then call certain things when needed)
-// for example, when calling push, Go stdlib container/heap will call len, less, and swap to make sure it retains its heap property (in this case, min)
+// NOTE: Go provides a Heap implementation. In order to use it, you must implement the interface provided.
+// NOTE: Once implemented, Go will call the additional functions needed when calling Push and Pop, using your implementations.
+
+// MinHeap []*node type represents the MinHeap using a slice of nodes.
 type MinHeap []*node
 
+// Len() function will return the length of the min heap (required for interface).
 func (minHeap MinHeap) Len() int {
 	return len(minHeap)
 }
 
+// Less() function will compare the frequences of two nodes in the min heap (required for interface).
+// In this case, comparing minHeap[i] < minHeap[j] will result in us building a min heap.
 func (minHeap MinHeap) Less(i, j int) bool {
 	return minHeap[i].freq < minHeap[j].freq
 }
 
+// Swap() will swap two elements in the min heap (required for interface).
 func (minHeap MinHeap) Swap(i, j int) {
 	minHeap[i], minHeap[j] = minHeap[j], minHeap[i]
 }
 
+// Push() will add a new node to the min heap (required for interface).
+// NOTE: Go will automatically handle all re-orderings, etc if needed.
 func (minHeap *MinHeap) Push(x any) {
 	*minHeap = append(*minHeap, x.(*node))
 }
 
+// Pop() will remove a node from the heap (required for interface).
+// NOTE: Go will automatically handle re-ordering elements, etc if needed.
 func (minHeap *MinHeap) Pop() any {
 	placeholder := *minHeap
 	length := len(placeholder)
@@ -54,12 +67,13 @@ func (minHeap *MinHeap) Pop() any {
 	return value
 }
 
-// Builds out the huffman tree using a minheap
+// buildHuffmanTree() function builds out the Huffman Tree utilizing the min heap.
 func buildHuffmanTree(charFreqMap map[byte]int) *node {
 	minHeap := &MinHeap{}
 	heap.Init(minHeap)
 
-	// loop and push onto the heap
+	// Create a node for each char in the charFreqMap.
+	// Add the nodes to the Min heap which will order nodes by frequency (smallest frequency = highest priority).
 	for k, v := range charFreqMap {
 		newNode := &node{
 			char: k,
@@ -68,10 +82,9 @@ func buildHuffmanTree(charFreqMap map[byte]int) *node {
 		heap.Push(minHeap, newNode)
 	}
 
-	// NOTE: to access and index, need to do (*minHeap)[i]
-	// This is the huffman tree builder man part
-	// Makes a new node (freq is left + right)
-	// Left and right are the two shmallest atm
+	// Build the Huffman Tree.
+	// First, pop off the first two nodes (both have the current smallest frequencies).
+	// Create a parent node, set freq to the total frequency, and push onto the Min Heap.
 	for minHeap.Len() > 1 {
 		left := heap.Pop(minHeap).(*node)
 		right := heap.Pop(minHeap).(*node)
@@ -86,46 +99,51 @@ func buildHuffmanTree(charFreqMap map[byte]int) *node {
 		heap.Push(minHeap, newNode)
 	}
 
+	// Return the head node of the Min Heap.
 	return heap.Pop(minHeap).(*node)
 }
 
+// generateHuffmanCodes() will create the Huffman Code for each node.
+// Traverse the tree recursivley until you reach a leaf. Once found, add the encoding to the map.
+// Each encoding is build based on the sides of the tree traversed to find it (left will add a "0", right will add a "1").
 func generateHuffmanCodes(node *node, encodings map[byte]string, encoding string) {
-	// traverse the tree and generate the generate codes
-	// left = add a 0, right = add a 1 until we reach the right code
-	// store this somewhere i guess
 	if node == nil {
 		return
 	}
 
-	// traverse each side, adding either 1 or zero to the code?
+	// If we have found a leaf node, set the encoding and return.
 	if node.left == nil && node.right == nil {
-		// if node.char != 0 {
 		encodings[node.char] = encoding
 		return
 	}
 
+	// Traverse either side of the tree to find all leaf nodes, building the encoding.
+	// Left = encoding + "0".
+	// Right = encoding + "1".
 	generateHuffmanCodes(node.left, encodings, encoding+"0")
 	generateHuffmanCodes(node.right, encodings, encoding+"1")
 }
 
+// convertStringtoBytes() function will take a concatenated string and convert it to bytes.
+// This string contains the Huffman codes for each letter in the file, in the order they appear in the file.
 func convertStringtoBytes(fullEncodingString string) []byte {
-	// Calculate the number of bytes needed (rounding up)
 	numBytes := (len(fullEncodingString) + 7) / 8
 	bytes := make([]byte, numBytes)
 
-	// Process each byte
+	// Process each byte and calculate start and end indices for this byte.
 	for i := range numBytes {
-		// Calculate start and end indices for this byte
 		startIdx := i * 8
 		endIdx := startIdx + 8
+
 		if endIdx > len(fullEncodingString) {
 			endIdx = len(fullEncodingString)
 		}
 
-		// Extract the bit string for this byte
+		// Extract out the current bit string sequence.
 		currBitString := fullEncodingString[startIdx:endIdx]
 
-		// Pad with zeros if we don't have 8 bits
+		// Account for padding of the final element.
+		// NOTE: If decoding, must account for the fact that the last element could have padding.
 		if len(currBitString) < 8 {
 			padding := make([]byte, 8-len(currBitString))
 			for i := range padding {
@@ -134,7 +152,7 @@ func convertStringtoBytes(fullEncodingString string) []byte {
 			currBitString = currBitString + string(padding)
 		}
 
-		// Convert to a byte
+		// Finish by converting the current bit string sequence to an actual byte, saving it to the bytes slice.
 		b, _ := strconv.ParseUint(currBitString, 2, 8)
 		bytes[i] = byte(b)
 	}
@@ -142,6 +160,7 @@ func convertStringtoBytes(fullEncodingString string) []byte {
 	return bytes
 }
 
+// writeEncodeFile() function will write the encoded bytes to the output binary file.
 func writeEncodeFile(fileContents []byte, encodings map[byte]string) []byte {
 	outputFile, err := os.Create("output/output_1.bin")
 	if err != nil {
@@ -150,21 +169,24 @@ func writeEncodeFile(fileContents []byte, encodings map[byte]string) []byte {
 
 	defer outputFile.Close()
 
-	stringBits := ""
+	// Traverse the original file contents, looking up the Huffman code for each letter.
+	// Concat the codes to a string.
+	encodingString := ""
 	for _, c := range fileContents {
-		stringBits += encodings[c]
+		encodingString += encodings[c]
 	}
 
-	bits2 := convertStringtoBytes(stringBits)
+	// Convert the entire string to bytes then write to the binary file.
+	encodedBytes := convertStringtoBytes(encodingString)
+	outputFile.Write(encodedBytes)
 
-	outputFile.Write(bits2)
-
-	return bits2
+	return encodedBytes
 }
 
-// printFreqTable will just print out the chars and their corresponding frequency of
-// occurence within the file
+// printFreqTable() function will just print out the chars and their corresponding frequency of occurence within the file.
 func printFreqTable(charFreqMap map[byte]int) {
+
+	// NOTE: This is needed to sort by key in Go because the map implementation doesn't auto sort (lame).
 	chars := make([]byte, 0)
 	for c := range charFreqMap {
 		chars = append(chars, c)
@@ -184,7 +206,7 @@ func printFreqTable(charFreqMap map[byte]int) {
 	fmt.Printf("\n")
 }
 
-// readFile just takes the corresponding file name and opens it.
+// readFile() function just takes the corresponding file name and opens it.
 // It will then read in all chars within the file (lowercase, a-z).
 // Each char will be stored in a map with the corresponding frequency of occurence.
 // Additionally, everything read from the file is stored and returned in a byte slice.
@@ -232,9 +254,6 @@ func main() {
 		log.Fatal(err)
 	}
 
-	printFreqTable(freq)
-	fmt.Printf("Size of the file BEFORE compression: %5d bytes\n", inputFileInfo.Size())
-
 	// Build out the Huffman tree and generate the codes, starting at the root.
 	encodings := make(map[byte]string)
 	root := buildHuffmanTree(freq)
@@ -247,5 +266,7 @@ func main() {
 		log.Fatal(err)
 	}
 
+	printFreqTable(freq)
+	fmt.Printf("Size of the file BEFORE compression: %5d bytes\n", inputFileInfo.Size())
 	fmt.Printf("Size of the file AFTER compression : %5d bytes\n\n", outputFileInfo.Size())
 }
