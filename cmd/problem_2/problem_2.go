@@ -195,6 +195,11 @@ func (graph *Graph) AugmentingPaths(source, sink int) []*AugPath {
 func printAugmentingPaths(paths []*AugPath) {
 	totalFlow := 0
 
+	if len(paths) == 0 {
+		fmt.Println("NO VALID PATH")
+		return
+	}
+
 	for i, p := range paths {
 		currPath := p.pathVertices
 		currFlow := p.flow
