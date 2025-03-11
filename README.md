@@ -1,5 +1,5 @@
 # COSC581-HW5
-Contains code for homework 5 problems
+Contains code for homework 5 problems.
 
 ## Folder Structure
 ```
@@ -34,8 +34,20 @@ the characters, and the size of the file (in bytes) before and after the encodin
 Note: You will build the frequency table based on the content of the file.
 
 ### Solution:
-To solve this question, I first started with reading in the file contents and creating a character frequency table. This will describe how many times each character appears in the file. Then, I created a min heap which will store nodes of type node (shown below). This way, all characters in the min heap can be prioritized based on their frequency.
-```
+To solve this question, I first started with reading in the file contents and creating a character frequency table. This will describe how many times each character appears in the file. Then, I created a min heap which will store nodes of type node (shown below). This way, all characters in the min heap can be prioritized based on their frequency. NOTE: The min heap I used was based on the implementation suggested by the Go documentation. I implemented the required interface and used it with my node struct.
+```Go
+// node struct represents a node in the MinHeap.
+// char -> represents the character read in from the file for this node.
+// freq -> frequency the character appears in the file.
+// left -> left node connection in the min heap.
+// right -> right node connection in the min heap.
+// NOTE: This is also used to create new 'parent' nodes, that point to two 'char' nodes, with the frequency set to the total of both left.freq + right.freq.
+type node struct {
+	char  byte
+	freq  int
+	left  *node
+	right *node
+}
 ```
 
 Once the min heap is officially built, I am then able to build the Huffman Tree. This just consisted of popping off the two highest priority nodes (lowest frequencies), making a parent node (with a frequency equal to the total) and adding it back into the min heap. After this, the min heap is officially a Huffman Tree! Then, I parse the Huffman tree, creating and storing Huffman codes for each letter. These codes are built as the tree is parsed and stored once the node (leaf) is found. For example, everytime the left side of a node is traversed, I add "0" to the encoding. Alternativley, everytime I traverse the right side, I add "1" to the encoding. 
@@ -44,6 +56,40 @@ Once I have all of the Huffman Codes created for their corresponding letters bas
 
 The results were then written, producing a compressed binary file. Here is the output when ran on a file with a size of 100,001 bytes.:
 ```
+
+      ====================== 
+      |   CHAR  |  FREQ    |
+      ====================== 
+      |     a   |  3861    |
+      |     b   |  3851    |
+      |     c   |  3896    |
+      |     d   |  3914    |
+      |     e   |  3835    |
+      |     f   |  3817    |
+      |     g   |  3876    |
+      |     h   |  3922    |
+      |     i   |  3875    |
+      |     j   |  3726    |
+      |     k   |  3833    |
+      |     l   |  3860    |
+      |     m   |  3756    |
+      |     n   |  3842    |
+      |     o   |  3913    |
+      |     p   |  3784    |
+      |     q   |  3842    |
+      |     r   |  3819    |
+      |     s   |  3861    |
+      |     t   |  3850    |
+      |     u   |  3846    |
+      |     v   |  3802    |
+      |     w   |  3893    |
+      |     x   |  3893    |
+      |     y   |  3800    |
+      |     z   |  3833    |
+       -------------------- 
+
+Size of the file BEFORE compression: 100001 bytes
+Size of the file AFTER compression : 59572 bytes
 ```
 
 ## Problem #2
@@ -96,7 +142,5 @@ Augmenting Path #2  0 -> 3 -> 4 | Flow = 5
 Total Flow: 12
 ```
 
-## TODO
-- part 1 
-    - comments, clean up
-    - explain in the readme
+### References Used
+
