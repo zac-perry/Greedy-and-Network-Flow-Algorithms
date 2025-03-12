@@ -191,10 +191,7 @@ func (graph *Graph) AugmentingPaths(source, sink int) []*AugPath {
 
 // printAugmentingPaths() just prints out the found augmenting paths.
 // Will print the path (vertices), along with the flow.
-// Also outputs the total flow.
 func printAugmentingPaths(paths []*AugPath) {
-	totalFlow := 0
-
 	if len(paths) == 0 {
 		fmt.Println("NO VALID PATH")
 		return
@@ -213,10 +210,7 @@ func printAugmentingPaths(paths []*AugPath) {
 			}
 		}
 		fmt.Printf(" | Flow = %d\n", currFlow)
-		totalFlow += currFlow
 	}
-
-	fmt.Printf("\nTotal Flow: %d\n", totalFlow)
 }
 
 // readFile will read a file containing a flow network in DIMACS format.

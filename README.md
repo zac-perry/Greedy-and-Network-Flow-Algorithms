@@ -1,6 +1,8 @@
 # COSC581-HW5
 Contains code for homework 5 problems.
 
+Zachary Perry, 3/11/25
+
 ## Folder Structure
 ```
 - cmd/problem_1/problem_1.go: contains code for problem 1
@@ -133,8 +135,6 @@ Once the graph is created, with all edges stored in the map, keyed on their vert
 Augmenting Path #0  0 -> 1 -> 4 | Flow = 4
 Augmenting Path #1  0 -> 2 -> 4 | Flow = 3
 Augmenting Path #2  0 -> 3 -> 4 | Flow = 5
-
-Total Flow: 12
 ```
 
 One interesting issue I ran into was handling cycles. Whenever I was calculating the maximum amount of flow that could be sent through the given path, I would often search for the first occurence of the needed edge for v1 -> v2. This would sometimes result in me using an edge that was resulting in a cycle (backwards with 0 capacity). This would cause my output to be completley wrong, even though I was searching for the right edge. For example: 
