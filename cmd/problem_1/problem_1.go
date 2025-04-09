@@ -120,8 +120,12 @@ func generateHuffmanCodes(node *node, encodings map[byte]string, encoding string
 	// Traverse either side of the tree to find all leaf nodes, building the encoding.
 	// Left = encoding + "0".
 	// Right = encoding + "1".
-	generateHuffmanCodes(node.left, encodings, encoding+"0")
-	generateHuffmanCodes(node.right, encodings, encoding+"1")
+	if node.left != nil {
+		generateHuffmanCodes(node.left, encodings, encoding+"0")
+	}
+	if node.right != nil {
+		generateHuffmanCodes(node.right, encodings, encoding+"1")
+	}
 }
 
 // convertStringtoBytes() function will take a concatenated string and convert it to bytes.
